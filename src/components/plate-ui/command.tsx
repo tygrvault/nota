@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { type DialogProps } from '@radix-ui/react-dialog';
 import { cn, createPrimitiveElement, withCn, withRef } from '@udecode/cn';
 import { Command as CommandPrimitive } from 'cmdk';
@@ -17,7 +16,7 @@ export const Command = withCn(
 export function CommandDialog({ children, ...props }: DialogProps) {
   return (
     <Dialog {...props}>
-      <DialogContent className="overflow-hidden p-0 shadow-lg">
+      <DialogContent className="p-0 overflow-hidden shadow-lg">
         <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:size-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:size-5">
           {children}
         </Command>
@@ -28,8 +27,8 @@ export function CommandDialog({ children, ...props }: DialogProps) {
 
 export const CommandInput = withRef<typeof CommandPrimitive.Input>(
   ({ className, ...props }, ref) => (
-    <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
-      <Icons.search className="mr-2 size-4 shrink-0 opacity-50" />
+    <div className="flex items-center px-3 border-b" cmdk-input-wrapper="">
+      <Icons.search className="mr-2 opacity-50 size-4 shrink-0" />
       <CommandPrimitive.Input
         ref={ref}
         className={cn(

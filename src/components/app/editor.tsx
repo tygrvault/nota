@@ -19,6 +19,9 @@ import { FixedToolbarButtons } from "@/components/plate-ui/fixed-toolbar-buttons
 import { FloatingToolbar } from "@/components/plate-ui/floating-toolbar";
 import { FloatingToolbarButtons } from "@/components/plate-ui/floating-toolbar-buttons";
 import { MentionCombobox } from "@/components/plate-ui/mention-combobox";
+import { ELEMENT_H2 } from "@udecode/plate-heading";
+import { ELEMENT_BLOCKQUOTE } from "@udecode/plate-block-quote";
+import { ScrollArea } from "../ui/scroll-area";
 
 export default function PlateEditor() {
     const containerRef = useRef(null);
@@ -26,8 +29,20 @@ export default function PlateEditor() {
     const initialValue = [
         {
             id: "1",
+            type: ELEMENT_H2,
+            children: [{ text: "Welcome to Nota!" }],
+        },
+        {
+            id: "2",
             type: ELEMENT_PARAGRAPH,
-            children: [{ text: "Hello, World!" }],
+            children: [
+                { text: "An open-source and cross-platform note taking app." },
+            ],
+        },
+        {
+            id: "3",
+            type: ELEMENT_BLOCKQUOTE,
+            children: [{ text: "CTRL + A + Backspace to clear all text." }],
         },
     ];
 
@@ -40,20 +55,21 @@ export default function PlateEditor() {
                         className={cn(
                             "relative",
                             // Block selection
-                            "[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4"
+                            "[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4 w-full"
                         )}
                     >
                         <FixedToolbar>
                             <FixedToolbarButtons />
                         </FixedToolbar>
-
-                        <Editor
-                            className="px-[96px] py-16"
-                            autoFocus
-                            focusRing={false}
-                            variant="ghost"
-                            size="md"
-                        />
+                        <ScrollArea className="h-screen-no-toolbar">
+                            <Editor
+                                className="px-[96px] py-12 flex-wrap"
+                                autoFocus
+                                focusRing={false}
+                                variant="ghost"
+                                size="md"
+                            />
+                        </ScrollArea>
 
                         <FloatingToolbar>
                             <FloatingToolbarButtons />

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { cn } from '@udecode/cn';
 import {
   CODE_BLOCK_LANGUAGES,
@@ -47,14 +47,14 @@ export function CodeBlockCombobox() {
           variant="ghost"
           role="combobox"
           aria-expanded={open}
-          className="h-5 justify-between px-1 text-xs"
+          className="justify-between h-5 px-1 text-xs"
           size="xs"
         >
           {state.value
             ? languages.find((language) => language.value === state.value)
                 ?.label
             : 'Plain Text'}
-          <Icons.chevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+          <Icons.chevronsUpDown className="ml-2 opacity-50 size-4 shrink-0" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
