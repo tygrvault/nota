@@ -4,6 +4,8 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 
 import { ThemeProvider } from "./components/theme/provider";
 import { TooltipProvider } from "./components/ui/tooltip";
+import Context from "./components/app/context";
+import { cn } from "./lib/utils";
 
 import { routeTree } from "./routeTree.gen";
 
@@ -16,15 +18,13 @@ declare module "@tanstack/react-router" {
 }
 
 import "./globals.css";
-import Context from "./components/app/context";
-import { cn } from "./lib/utils";
 
 const rootElement = document.getElementById("root") as HTMLElement;
 if (!rootElement.innerHTML) {
     const root = ReactDOM.createRoot(rootElement);
     root.render(
         <React.StrictMode>
-            <ThemeProvider defaultTheme="system" storageKey="theme">
+            <ThemeProvider defaultTheme="dark" storageKey="theme">
                 <main
                     className={cn(
                         "min-h-screen bg-background font-sans antialiased",
@@ -34,8 +34,8 @@ if (!rootElement.innerHTML) {
                 >
                     <TooltipProvider delayDuration={0} disableHoverableContent>
                         <Context />
-                        <div className="relative flex flex-col min-h-screen">
-                            <div className="flex-1 flex flex-row">
+                        <div className="flex flex-col min-h-screen">
+                            <div className="flex flex-row flex-1">
                                 <RouterProvider router={router} />
                             </div>
                         </div>

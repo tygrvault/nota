@@ -1,4 +1,3 @@
-import MillionLint from '@million/lint';
 import million from 'million/compiler';
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
@@ -39,4 +38,7 @@ export default defineConfig(async () => ({
 			"@": path.resolve(__dirname, "./src"),
 		},
 	},
+	build: {
+		chunkSizeWarningLimit: 2048
+	}
 }));

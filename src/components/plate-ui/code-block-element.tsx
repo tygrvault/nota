@@ -1,6 +1,4 @@
-'use client';
-
-import './code-block-element.css';
+import "./code-block-element.css";
 
 import { cn, withRef } from "@udecode/cn";
 import { useCodeBlockElementState } from "@udecode/plate-code-block";

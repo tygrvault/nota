@@ -1,7 +1,7 @@
 [package]
 name = "nota"
 version = "0.0.0"
-description = "A Tauri App"
+description = "Notes for the modern era."
 authors = ["you"]
 edition = "2021"
 

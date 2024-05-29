@@ -1,34 +1,50 @@
 {
-  "productName": "Nota",
-  "version": "0.0.0",
-  "identifier": "dev.tygr.nota",
-  "build": {
-    "beforeDevCommand": "pnpm dev",
-    "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "pnpm build",
-    "frontendDist": "../dist"
-  },
-  "app": {
-    "windows": [
-      {
-        "title": "Nota",
-        "width": 800,
-        "height": 600
-      }
-    ],
-    "security": {
-      "csp": null
+    "productName": "Nota",
+    "version": "0.0.0",
+    "identifier": "dev.tygr.nota",
+    "build": {
+        "beforeDevCommand": "pnpm dev",
+        "devUrl": "http://localhost:1420",
+        "beforeBuildCommand": "pnpm build",
+        "frontendDist": "../dist"
+    },
+    "app": {
+        "windows": [
+            {
+                "title": "Nota",
+                "width": 800,
+                "height": 600,
+                "minWidth": 500,
+                "minHeight": 500
+            }
+        ],
+        "security": {
+            "csp": null
+        }
+    },
+    "bundle": {
+        "active": true,
+        "targets": ["deb", "dmg", "msi", "updater"],
+        "icon": [
+            "icons/32x32.png",
+            "icons/128x128.png",
+            "icons/128x128@2x.png",
+            "icons/icon.icns",
+            "icons/icon.ico"
+        ],
+        "category": "Utility",
+        "longDescription": "Nota is an open-source note-taking app for the modern era.",
+        "shortDescription": "Notes for the modern era.",
+        "publisher": "tygrdev",
+        "copyright": "tygrdev 2024",
+        "windows": {
+            "allowDowngrades": false,
+            "certificateThumbprint": null,
+            "digestAlgorithm": "sha256",
+            "webviewInstallMode": {
+                "silent": true,
+                "type": "downloadBootstrapper"
+            }
+        }
     }
-  },
-  "bundle": {
-    "active": true,
-    "targets": "all",
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ]
-  }
 }

@@ -73,6 +73,7 @@ module.exports = {
             },
             spacing: {
                 "screen-no-toolbar": "calc(100vh - 45px)",
+                "screen-no-nav": "calc(100vw - 240px)",
             },
         },
     },

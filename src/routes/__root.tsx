@@ -1,14 +1,15 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 
-import Navbar from "@/components/app/nav";
-import SubNavBar from "@/components/app/sub-nav";
+import Navbar from "@/components/app/sidebar";
 
 export const Route = createRootRoute({
     component: () => (
         <>
+            {/* TODO: Makes spacing on the horizontal plane weird */}
             <Navbar />
-            <SubNavBar />
-            <Outlet />
+            <div className="w-screen-no-nav">
+                <Outlet />
+            </div>
         </>
     ),
 });

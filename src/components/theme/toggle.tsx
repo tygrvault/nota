@@ -9,16 +9,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/theme/provider";
 
-export function ThemeToggle() {
+export function ThemeToggle({ big = false }: { big?: boolean }) {
     const { setTheme } = useTheme();
 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                    <Sun className="h-5 w-5 dark:hidden" />
-                    <Moon className="absolute h-5 w-5 hidden dark:block" />
+                <Button
+                    variant="ghost"
+                    size={big ? "default" : "icon"}
+                    className="flex flex-row items-center data-[big=true]:justify-start justify-center data-[big=true]:gap-2 data-[big=true]:w-full"
+                    data-big={big}
+                >
+                    <Sun className="w-5 h-5 dark:hidden" />
+                    <Moon className="hidden w-5 h-5 dark:block" />
                     <span className="sr-only">Toggle theme</span>
+                    <span>{big ? "Toggle theme" : ""}</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
