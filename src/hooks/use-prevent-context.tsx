@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export default function Context() {
+export default function usePreventContext() {
     useEffect(() => {
         const handleContextMenu = (e: any) => {
             e.preventDefault();
@@ -12,6 +12,4 @@ export default function Context() {
             document.removeEventListener("contextmenu", handleContextMenu);
         };
     });
-
-    return <>{/* TODO: Add custom context menu */}</>;
 }
