@@ -1,5 +1,6 @@
 import { Store } from "@tauri-apps/plugin-store";
 import { createContext, useContext, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export interface Vault {
     name: string;
@@ -8,9 +9,7 @@ export interface Vault {
 
 export interface SettingsContextType {
     state: {
-        onboarding: {
-            complete: boolean;
-        };
+        onboarding: boolean;
         vault: {
             list: Vault[];
             current: number;
@@ -26,9 +25,7 @@ export interface SettingsContextType {
 
 export const SettingsContext = createContext<SettingsContextType>({
     state: {
-        onboarding: {
-            complete: false,
-        },
+        onboarding: false,
         vault: {
             list: [],
             current: 0,
@@ -51,9 +48,7 @@ export const SettingsProvider = ({
 
     const [loading, setLoading] = useState(true);
     const [state, setState] = useState<SettingsContextType["state"]>({
-        onboarding: {
-            complete: false,
-        },
+        onboarding: false,
         vault: {
             list: [],
             current: 0,
@@ -61,19 +56,9 @@ export const SettingsProvider = ({
     });
 
     useEffect(() => {
-        const getAllEntries = async () => {
-            const e = await store.entries();
-            console.log(e);
-            e.forEach((v: any) => {
-                setState({ ...state, [v[0]]: v[1] });
-            });
-
-            console.log(state);
-
+        load().then(() => {
             setLoading(false);
-        };
-
-        getAllEntries().catch(console.error);
+        });
     }, []);
 
     async function get(key: string) {
@@ -84,6 +69,9 @@ export const SettingsProvider = ({
     async function set(key: string, value: unknown) {
         const res = await store
             .set(key, value)
+            .then(async () => {
+                await save();
+            })
             .then(() => {
                 setState({ ...state, [key]: value });
                 return true;
@@ -122,33 +110,19 @@ export const SettingsProvider = ({
         return res;
     }
 
-    async function load(clear?: boolean) {
-        const res = await store
-            .load()
-            .then(async () => {
-                setLoading(true);
-
-                if (clear) {
-                    await store.clear();
-                    setState({
-                        onboarding: {
-                            complete: false,
-                        },
-                        vault: {
-                            list: [],
-                            current: 0,
-                        },
-                    });
+    async function load() {
+        const res = store
+            .entries()
+            .then((e) => {
+                for (const [key, value] of e) {
+                    console.log(key, value);
+                    setState({ ...state, [key]: value });
                 }
 
-                const e = await store.entries();
-                e.forEach((v: any) => {
-                    setState({ ...state, [v[0]]: v[1] });
-                });
-                setLoading(false);
                 return true;
             })
-            .catch(() => {
+            .catch((e) => {
+                toast.error("Failed to load settings.", { description: e });
                 return false;
             });
 

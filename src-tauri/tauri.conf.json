@@ -24,7 +24,7 @@
     },
     "bundle": {
         "active": true,
-        "targets": ["deb", "dmg", "msi", "updater"],
+        "targets": ["deb", "appimage", "dmg", "msi", "updater"],
         "icon": [
             "icons/32x32.png",
             "icons/128x128.png",
@@ -45,6 +45,14 @@
                 "silent": true,
                 "type": "downloadBootstrapper"
             }
+        }
+    },
+    "plugins": {
+        "updater": {
+            "endpoints": [
+                "https://cdn.crabnebula.app/update/tygrdev/nota/{{target}}-{{arch}}/{{current_version}}"
+            ],
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDhEQzdBRDUwQ0U1NTc1MEUKUldRT2RWWE9VSzNIamNCekxHY3lNamVURkJCSVRlTk82MER6UXRuVTZjSG9wYTNCVXMrbmtoNngK"
         }
     }
 }

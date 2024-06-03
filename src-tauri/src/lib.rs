@@ -11,6 +11,11 @@ pub async fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![create_vault])
+				.setup(|app| {
+            #[cfg(desktop)]
+            app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("nota has crashed (╥﹏╥)");
 }

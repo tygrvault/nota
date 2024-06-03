@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::json;
 use tauri::{Manager, Wry};
 use tauri_plugin_store::{with_store, StoreCollection};
 

@@ -1,8 +1,7 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 
 // Global Providers
-import { TooltipProvider } from "./components/ui/tooltip";
-import { SettingsProvider, useSettings } from "./contexts/settings";
+import { useSettings } from "./contexts/settings";
 
 // Hooks
 import usePreventContext from "./hooks/use-prevent-context";
@@ -29,21 +28,17 @@ export default function App() {
 
     return (
         <>
-            <TooltipProvider delayDuration={0} disableHoverableContent>
-                <SettingsProvider>
-                    {state.onboarding.complete ? (
-                        <>
-                            <div className="flex flex-col min-h-screen">
-                                <div className="flex flex-row flex-1">
-                                    <RouterProvider router={router} />
-                                </div>
-                            </div>
-                        </>
-                    ) : (
-                        <Onboarding />
-                    )}
-                </SettingsProvider>
-            </TooltipProvider>
+            {state.onboarding ? (
+                <>
+                    <div className="flex flex-col min-h-screen">
+                        <div className="flex flex-row flex-1">
+                            <RouterProvider router={router} />
+                        </div>
+                    </div>
+                </>
+            ) : (
+                <Onboarding />
+            )}
         </>
     );
 }

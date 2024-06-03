@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { open } from "@tauri-apps/plugin-dialog";
-import { useSettings } from "@/contexts/settings";
 
 export default function CreateVault() {
     const [name, setName] = useState("");
@@ -14,7 +13,6 @@ export default function CreateVault() {
     const [loading, setLoading] = useState(false);
 
     const { prevStep, nextStep } = useOnboarding();
-    const { load } = useSettings();
 
     async function createVault() {
         if (name.length < 1) {
@@ -31,7 +29,6 @@ export default function CreateVault() {
             .then(async () => {
                 setLoading(false);
                 nextStep();
-                await load();
             })
             .catch((e) => {
                 toast.error("Something went wrong", {
