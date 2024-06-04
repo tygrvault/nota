@@ -1,8 +1,10 @@
+import { invoke } from "@tauri-apps/api/core";
 import { Store } from "@tauri-apps/plugin-store";
 import { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export interface Vault {
+    id: number;
     name: string;
     path: string;
 }
@@ -17,10 +19,16 @@ export interface SettingsContextType {
     };
 
     get: (key: string) => Promise<unknown>;
-    set: (key: string, value: unknown) => Promise<unknown>;
+    set: (
+        key: string,
+        value: unknown,
+        refreshState?: boolean
+    ) => Promise<unknown>;
     remove: (key: string) => Promise<boolean>;
     save: () => Promise<boolean>;
     load: () => Promise<boolean>;
+
+    createVault: (name: string, path: string) => Promise<boolean>;
 }
 
 export const SettingsContext = createContext<SettingsContextType>({
@@ -37,6 +45,7 @@ export const SettingsContext = createContext<SettingsContextType>({
     remove: async () => Promise.resolve(false),
     save: async () => Promise.resolve(false),
     load: async () => Promise.resolve(false),
+    createVault: async () => Promise.resolve(false),
 });
 
 export const SettingsProvider = ({
@@ -66,14 +75,17 @@ export const SettingsProvider = ({
         return data;
     }
 
-    async function set(key: string, value: unknown) {
+    async function set(key: string, value: unknown, refreshState?: boolean) {
         const res = await store
             .set(key, value)
             .then(async () => {
                 await save();
             })
-            .then(() => {
-                setState({ ...state, [key]: value });
+            .then(async () => {
+                if (refreshState) {
+                    await load();
+                }
+
                 return true;
             })
             .catch(() => {
@@ -113,12 +125,20 @@ export const SettingsProvider = ({
     async function load() {
         const res = store
             .entries()
-            .then((e) => {
-                for (const [key, value] of e) {
-                    console.log(key, value);
-                    setState({ ...state, [key]: value });
-                }
+            .then((e: [key: string, value: any][]) => {
+                const data: SettingsContextType["state"] = {
+                    onboarding: false,
+                    vault: {
+                        list: [],
+                        current: 0,
+                    },
+                };
 
+                e.forEach(([key, value]) => {
+                    data[key as keyof typeof data] = value;
+                });
+
+                setState(data);
                 return true;
             })
             .catch((e) => {
@@ -129,10 +149,39 @@ export const SettingsProvider = ({
         return res;
     }
 
+    async function createVault(name: string, path: string) {
+        if (name.length < 1) {
+            toast.error("Please enter a name for your vault");
+            return false;
+        }
+
+        if (path.length < 1) {
+            toast.error("Please select a location for your vault");
+            return false;
+        }
+
+        const res = await invoke("create_vault", {
+            name: name,
+            path: path,
+        })
+            .then(async () => {
+                toast.success(`Created the vault ${name} successfully!`);
+                return true;
+            })
+            .catch((e) => {
+                toast.error("Something went wrong", {
+                    description: e,
+                });
+                return false;
+            });
+
+        return res;
+    }
+
     return (
         <>
             <SettingsContext.Provider
-                value={{ state, get, set, remove, save, load }}
+                value={{ state, get, set, remove, save, load, createVault }}
             >
                 {!loading && children}
             </SettingsContext.Provider>

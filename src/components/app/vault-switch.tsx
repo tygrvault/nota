@@ -33,37 +33,8 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-
-const groups = [
-    {
-        label: "Vaults",
-        vaults: [
-            {
-                label: "Personal",
-                value: "personal",
-            },
-            {
-                label: "School",
-                value: "school",
-            },
-            {
-                label: "Work",
-                value: "work",
-            },
-        ],
-    },
-    {
-        label: "Nota",
-        vaults: [
-            {
-                label: "Documentation",
-                value: "docs",
-            },
-        ],
-    },
-];
-
-type Vault = (typeof groups)[number]["vaults"][number];
+import { Vault, useSettings } from "@/contexts/settings";
+import { open as openDialog } from "@tauri-apps/plugin-dialog";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
     typeof PopoverTrigger
@@ -72,11 +43,41 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 interface VaultSwitcherProps extends PopoverTriggerProps {}
 
 export default function VaultSwitch({ className }: VaultSwitcherProps) {
+    const { state, set, createVault, load } = useSettings();
     const [open, setOpen] = React.useState(false);
+
     const [showNewVaultDialog, setShowNewVaultDialog] = React.useState(false);
-    const [selectedVault, setSelectedVault] = React.useState<Vault>(
-        groups[0].vaults[0]
-    );
+    const [newVaultName, setNewVaultName] = React.useState("");
+    const [newVaultPath, setNewVaultPath] = React.useState("");
+    const [newVaultLoading, setNewVaultLoading] = React.useState(false);
+    const [currentVault, setCurrentVault] = React.useState<Vault>({
+        name: "Loading...",
+        id: 0,
+        path: "",
+    });
+
+    React.useEffect(() => {
+        const currentVault = state.vault.list.find(
+            (x) => x.id === state.vault.current
+        );
+
+        if (currentVault) {
+            setCurrentVault(currentVault);
+        } else {
+            set("vault", { ...state.vault, current: state.vault.list[0].id });
+        }
+    }, []);
+
+    const handleCreateVault = async () => {
+        setNewVaultLoading(true);
+        await createVault(newVaultName, newVaultPath).then(async (res) => {
+            if (res) {
+                setShowNewVaultDialog(false);
+                await load();
+            }
+        });
+        setNewVaultLoading(false);
+    };
 
     return (
         <Dialog open={showNewVaultDialog} onOpenChange={setShowNewVaultDialog}>
@@ -91,13 +92,15 @@ export default function VaultSwitch({ className }: VaultSwitcherProps) {
                     >
                         <Avatar className="w-5 h-5 mr-2">
                             <AvatarImage
-                                src={`https://avatar.vercel.sh/${selectedVault.value}.png`}
-                                alt={selectedVault.label}
+                                src={`https://avatar.vercel.sh/${currentVault.name}.png`}
+                                alt={currentVault.name}
                                 className="grayscale"
                             />
                             <AvatarFallback>NV</AvatarFallback>
                         </Avatar>
-                        {selectedVault.label}
+                        <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+                            {currentVault.name}
+                        </span>
                         <CaretSortIcon className="w-4 h-4 ml-auto opacity-50 shrink-0" />
                     </Button>
                 </PopoverTrigger>
@@ -106,44 +109,37 @@ export default function VaultSwitch({ className }: VaultSwitcherProps) {
                         <CommandList>
                             <CommandInput placeholder="Search vault..." />
                             <CommandEmpty>No vault found.</CommandEmpty>
-                            {groups.map((group) => (
-                                <CommandGroup
-                                    key={group.label}
-                                    heading={group.label}
-                                >
-                                    {group.vaults.map((vault) => (
-                                        <CommandItem
-                                            key={vault.value}
-                                            onSelect={() => {
-                                                setSelectedVault(vault);
-                                                setOpen(false);
-                                            }}
-                                            className="text-sm"
-                                        >
-                                            <Avatar className="w-5 h-5 mr-2">
-                                                <AvatarImage
-                                                    src={`https://avatar.vercel.sh/${vault.value}.png`}
-                                                    alt={vault.label}
-                                                    className="grayscale"
-                                                />
-                                                <AvatarFallback>
-                                                    SC
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            {vault.label}
-                                            <CheckIcon
-                                                className={cn(
-                                                    "ml-auto h-4 w-4",
-                                                    selectedVault.value ===
-                                                        vault.value
-                                                        ? "opacity-100"
-                                                        : "opacity-0"
-                                                )}
+
+                            <CommandGroup heading="Vaults">
+                                {state.vault.list.map((vault, index) => (
+                                    <CommandItem
+                                        key={index}
+                                        onSelect={async () => {
+                                            await setCurrentVault(vault);
+                                            setOpen(false);
+                                        }}
+                                        className="text-sm"
+                                    >
+                                        <Avatar className="w-5 h-5 mr-2">
+                                            <AvatarImage
+                                                src={`https://avatar.vercel.sh/${vault.name}.png`}
+                                                alt={vault.name}
+                                                className="grayscale"
                                             />
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                            ))}
+                                            <AvatarFallback>NV</AvatarFallback>
+                                        </Avatar>
+                                        {vault.name}
+                                        <CheckIcon
+                                            className={cn(
+                                                "ml-auto h-4 w-4",
+                                                currentVault?.id === vault.id
+                                                    ? "opacity-100"
+                                                    : "opacity-0"
+                                            )}
+                                        />
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
                         </CommandList>
                         <CommandSeparator />
                         <CommandList>
@@ -176,7 +172,47 @@ export default function VaultSwitch({ className }: VaultSwitcherProps) {
                     <div className="py-2 pb-4 space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Vault name</Label>
-                            <Input id="name" placeholder="Personal Vault" />
+                            <Input
+                                id="name"
+                                placeholder="Personal Vault"
+                                value={newVaultName}
+                                onChange={(e) =>
+                                    setNewVaultName(e.target.value)
+                                }
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Location</Label>
+                            <div className="flex flex-row items-center gap-2">
+                                <Input
+                                    value={newVaultPath}
+                                    disabled
+                                    placeholder="~/tygrdev/notes"
+                                    className="w-full"
+                                />
+                                <Button
+                                    variant="secondary"
+                                    className="h-9"
+                                    onClick={async () => {
+                                        await openDialog({
+                                            multiple: false,
+                                            directory: true,
+                                            title: "Select a location for your new vault",
+                                            recursive: true,
+                                        })
+                                            .then((path) => {
+                                                if (path) {
+                                                    setNewVaultPath(path);
+                                                }
+                                            })
+                                            .catch((e) => {
+                                                console.error(e);
+                                            });
+                                    }}
+                                >
+                                    Browse
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -184,10 +220,17 @@ export default function VaultSwitch({ className }: VaultSwitcherProps) {
                     <Button
                         variant="outline"
                         onClick={() => setShowNewVaultDialog(false)}
+                        disabled={newVaultLoading}
                     >
                         Cancel
                     </Button>
-                    <Button type="submit">Continue</Button>
+                    <Button
+                        type="submit"
+                        onClick={handleCreateVault}
+                        disabled={newVaultLoading}
+                    >
+                        Continue
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

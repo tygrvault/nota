@@ -36,6 +36,7 @@ export default function CreateVault() {
                 });
             });
     }
+	
     return (
         <>
             <div className="flex flex-col items-center justify-center w-full h-screen gap-8 p-32 text-center">

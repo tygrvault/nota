@@ -24,7 +24,7 @@ export default function App() {
     usePreventContext();
     usePreventZoom();
 
-    const { state } = useSettings();
+	const { state } = useSettings();
 
     return (
         <>

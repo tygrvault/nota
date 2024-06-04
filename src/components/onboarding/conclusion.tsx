@@ -1,8 +1,11 @@
+import { useSettings } from "@/contexts/settings";
 import { useOnboarding } from ".";
 import { Button } from "../ui/button";
 
 export default function Conclusion() {
     const { finish } = useOnboarding();
+    const { state } = useSettings();
+    console.log(state);
 
     return (
         <>

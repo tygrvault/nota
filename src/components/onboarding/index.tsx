@@ -23,7 +23,7 @@ import Conclusion from "./conclusion";
 
 const Onboarding = () => {
     const [step, setStep] = useState(0);
-    const { set, save, load } = useSettings();
+    const { set } = useSettings();
 
     // NOTE: all onboarding screens here
     const screens = [<Welcome />, <CreateVault />, <Conclusion />];
@@ -37,7 +37,7 @@ const Onboarding = () => {
     }
 
     async function finish() {
-        const res = await set("onboarding", true)
+        const res = await set("onboarding", true, true)
             .then(async () => {
                 return true;
             })
@@ -47,9 +47,6 @@ const Onboarding = () => {
                 });
                 return false;
             });
-
-        await save();
-        await load();
 
         return res;
     }
